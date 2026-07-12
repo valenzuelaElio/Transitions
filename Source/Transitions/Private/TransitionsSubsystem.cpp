@@ -27,11 +27,9 @@ void UTransitionsSubsystem::TransitionToLevel(TSubclassOf<UUserWidget> WidgetCla
         return;
     }
 
-    // Get the GameInstance owning this subsystem
     UGameInstance* GameInstance = GetGameInstance();
     if (!GameInstance) return;
 
-    // Fetch a valid world context via the GameInstance
     UWorld* World = GameInstance->GetWorld();
     if (!World)
     {
@@ -39,7 +37,6 @@ void UTransitionsSubsystem::TransitionToLevel(TSubclassOf<UUserWidget> WidgetCla
         return;
     }
 
-    // Safely fetch the first local player controller
     APlayerController* PC = UGameplayStatics::GetPlayerController(World, 0);
     if (!PC)
     {
@@ -47,20 +44,15 @@ void UTransitionsSubsystem::TransitionToLevel(TSubclassOf<UUserWidget> WidgetCla
         return;
     }
 
-    // Create the widget instance safely using the Player Controller as the owner
     if(!ActiveWidgetInstance)
         ActiveWidgetInstance = CreateWidget<UUserWidget>(PC, WidgetClass);
 
-    if(ActiveWidgetInstance)
+    if (ActiveWidgetInstance) {
         GameInstance->GetGameViewportClient()->AddViewportWidgetContent(ActiveWidgetInstance->TakeWidget());
 
-    if (ActiveWidgetInstance && ActiveWidgetInstance->GetClass()->ImplementsInterface(UTransitionable::StaticClass()))
-        ITransitionable::Execute_FadeOutLevel(ActiveWidgetInstance, LevelToLoad);
-
-    //if (!LevelToLoad.IsNull())
-        //UGameplayStatics::OpenLevelBySoftObjectPtr(GetWorld(), LevelToLoad);
-
-
+        if (ActiveWidgetInstance->GetClass()->ImplementsInterface(UTransitionable::StaticClass()))
+            ITransitionable::Execute_FadeOutLevel(ActiveWidgetInstance, LevelToLoad);
+    }
 }
 
 void UTransitionsSubsystem::AddWidgetToTransitionToLevel(UUserWidget* Widget, TSoftObjectPtr<UWorld> LevelToLoad)
@@ -71,11 +63,9 @@ void UTransitionsSubsystem::AddWidgetToTransitionToLevel(UUserWidget* Widget, TS
         return;
     }
 
-    // Get the GameInstance owning this subsystem
     UGameInstance* GameInstance = GetGameInstance();
     if (!GameInstance) return;
 
-    // Fetch a valid world context via the GameInstance
     UWorld* World = GameInstance->GetWorld();
     if (!World)
     {
@@ -84,36 +74,18 @@ void UTransitionsSubsystem::AddWidgetToTransitionToLevel(UUserWidget* Widget, TS
     }
 
     ActiveWidgetInstance = Widget;
-    if (ActiveWidgetInstance)
+
+    if (ActiveWidgetInstance) {
         GameInstance->GetGameViewportClient()->AddViewportWidgetContent(ActiveWidgetInstance->TakeWidget());
 
-    if (ActiveWidgetInstance && ActiveWidgetInstance->GetClass()->ImplementsInterface(UTransitionable::StaticClass()))
-        ITransitionable::Execute_FadeOutLevel(ActiveWidgetInstance, LevelToLoad);
+        if (ActiveWidgetInstance->GetClass()->ImplementsInterface(UTransitionable::StaticClass()))
+            ITransitionable::Execute_FadeOutLevel(ActiveWidgetInstance, LevelToLoad);
+    }
 }
 
 void UTransitionsSubsystem::OnFinishTransitionToLevel(UWorld* LoadedWorld)
 {
-    // Get the GameInstance owning this subsystem
-    UGameInstance* GameInstance = GetGameInstance();
-    if (!GameInstance) return;
-
     if (ActiveWidgetInstance && ActiveWidgetInstance->GetClass()->ImplementsInterface(UTransitionable::StaticClass()))
         ITransitionable::Execute_FadeInLevel(ActiveWidgetInstance);
-    //GameInstance->GetGameViewportClient()->RemoveViewportWidgetContent(ActiveWidgetInstance->TakeWidget());
-    
 }
 
-void UTransitionsSubsystem::ClearTemporalDoorData() {
-
-	TransitionData.DoorsRelationID.Empty();
-}
-
-void UTransitionsSubsystem::SetDoorsRelationID(FString doorsRelationID) {
-	
-	TransitionData.DoorsRelationID = doorsRelationID;
-}
-
-void UTransitionsSubsystem::SetTransitionData(FTransitionData transitionData) {
-
-	TransitionData = transitionData;
-}

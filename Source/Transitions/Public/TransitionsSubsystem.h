@@ -7,24 +7,6 @@
 #include "Blueprint/UserWidget.h"
 #include "TransitionsSubsystem.generated.h"
 
-USTRUCT(BlueprintType)
-struct FTransitionData
-{
-    GENERATED_BODY() // Required as the first line of the struct body.
-
-    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Transition")
-    FString DoorsRelationID;
-
-    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Transition")
-    bool OverInitialLoad;
-
-    FTransitionData()
-    {
-        DoorsRelationID = "";
-        OverInitialLoad = false;
-    }
-};
-
 /**
  * 
  */
@@ -45,19 +27,6 @@ public:
 
     UFUNCTION()
     void OnFinishTransitionToLevel(UWorld* LoadedWorld);
-
-    UFUNCTION(BlueprintCallable)
-    void ClearTemporalDoorData();
-
-    UFUNCTION(BlueprintCallable)
-    void SetDoorsRelationID(FString doorsRelationID);
-
-    UFUNCTION(BlueprintCallable)
-    void SetTransitionData(FTransitionData transitionData);
-
-public:
-    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Data")
-    FTransitionData TransitionData;
 
 private:
     UPROPERTY()
